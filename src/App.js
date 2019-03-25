@@ -15,13 +15,20 @@ class App extends Component {
   // we can put our arrow functions directly into our component there
   // we won't need constructor and bind
   // so everythime we change something in input its going to give us an event
-  handleChange = (event) => {
+  handleChange = event => {
     // same as writing it this way only that we use curly brakets arund our variable
     // const value = event.target.value
     const {value} = event.target
     // when our search term is more than 2 letters we get a hint in the bottom and we would want to control that in our state.
-    if (value.length > 2 && 'Enter') {
-      console.log('We have a search term.');
+    if (value.length > 2) {
+    }
+  };
+
+  // the way to access what key we pressed to get the seach started we can access something called key.
+  handleKeyPress = event => {
+      const {value} = event.target
+      if (value.length > 2 && event.key === 'Enter') {
+      alert(`Search for ${value}`)
     }
   };
 
@@ -32,6 +39,7 @@ class App extends Component {
         <div className='search grid'>
           <input className='input grid-item' placeholder='Type something'
           onChange = {this.handleChange}
+          onKeyPress = {this.handleKeyPress}
           />
         </div>
       </div>
