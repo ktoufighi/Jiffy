@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-// import logo from './logo.svg';
 import './App.css';
+import loader from './images/loader.svg';
 
 
 // going to add the Header component inside our App file since its too small
@@ -11,17 +11,34 @@ const Header = () => (
   </div>
 )
 
+const UserHint = ({loading, hintText}) => (
+  <div className='user-hint'>
+    {loading ? <img className='block mx-auto' src={loader} /> : hintText}
+  </div>
+)
+
 class App extends Component {
-  // we can put our arrow functions directly into our component there
-  // we won't need constructor and bind
-  // so everythime we change something in input its going to give us an event
+  constructor(props) {
+    super(props)
+    this.state = {
+      searchTerm: '',
+      gifs: [],
+      hintText: '',
+      loading: false
+    }
+  }
+
   handleChange = event => {
-    // same as writing it this way only that we use curly brakets arund our variable
     // const value = event.target.value
     const {value} = event.target
-    // when our search term is more than 2 letters we get a hint in the bottom and we would want to control that in our state.
-    if (value.length > 2) {
-    }
+    // we need to manually set the state each time we have a new search term
+    this.setState((prevState, props) => ({
+    // we spread all the prevState (props)
+      ...prevState,
+      // and overwrite them with the value we put in same applies for hint text
+      searchTerm: value,
+      hintText: value.length > 2 ? `Hit enter to search ${value}.` : ''
+    }));
   };
 
   // the way to access what key we pressed to get the seach started we can access something called key.
@@ -33,6 +50,8 @@ class App extends Component {
   };
 
   render() {
+    // const searchTerm = this.state.searchTerm
+    const { searchTerm } = this.state
     return (
       <div className="page">
         <Header />
@@ -40,8 +59,11 @@ class App extends Component {
           <input className='input grid-item' placeholder='Type something'
           onChange = {this.handleChange}
           onKeyPress = {this.handleKeyPress}
+          // this is a controlled input everytime we put a value we overwrite the old ones
+          value = {searchTerm}
           />
         </div>
+        <UserHint {...this.state}/>
       </div>
     );
   }
