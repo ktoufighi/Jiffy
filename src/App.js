@@ -28,6 +28,28 @@ class App extends Component {
     }
   }
 
+  // here we would send our request to giphy using fetch and placing our search term as a varialbe inside the query request to giphy api.
+
+  // we need a function called searchGiphy to use async/await function
+  searchGiphy = async (searchTerm) => {
+    try {
+      const response = await fetch (
+        `https://api.giphy.com/v1/gifs/search?api_key=ucdWBMSLRaxoFuirhQdgvR2zVgm1c4zj&q=${searchTerm}&limit=25&offset=0&rating=G&lang=en`
+    );
+      const {data} = await response.json();
+
+
+      this.setState((prevState, props) => ({
+        ...prevState,
+
+        gif: data[2]
+      }))
+    }
+    catch (error) {
+
+    }
+  };
+
   handleChange = event => {
     // const value = event.target.value
     const {value} = event.target
@@ -45,17 +67,24 @@ class App extends Component {
   handleKeyPress = event => {
       const {value} = event.target
       if (value.length > 2 && event.key === 'Enter') {
-      alert(`Search for ${value}`)
+      // here we call our searchGiphy with the search term that comes from value
+      this.searchGiphy(value)
     }
   };
 
   render() {
     // const searchTerm = this.state.searchTerm
-    const { searchTerm } = this.state
+    // gif as a variable equals to this.state
+    const { searchTerm, gif } = this.state
     return (
       <div className="page">
         <Header />
         <div className='search grid'>
+        {gif && (<video
+            className='grid-item' autoplay loop src = {gif.images.original.mp4}
+          />
+        )}
+
           <input className='input grid-item' placeholder='Type something'
           onChange = {this.handleChange}
           onKeyPress = {this.handleKeyPress}
