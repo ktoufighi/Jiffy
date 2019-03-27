@@ -38,11 +38,23 @@ class App extends Component {
 
   // we need a function called searchGiphy to use async/await function
   searchGiphy = async (searchTerm) => {
+    this.setState({
+      // we set the state to show loading spinner while we wait for response to come back
+      loading: true
+    })
+
     try {
       const response = await fetch (
         `https://api.giphy.com/v1/gifs/search?api_key=ucdWBMSLRaxoFuirhQdgvR2zVgm1c4zj&q=${searchTerm}&limit=25&offset=0&rating=G&lang=en`
     );
       const {data} = await response.json();
+
+      // if the data returned was empty [] we need to stop code to do so we need to throw an error in the catch area
+      if (!data.length) {
+        // we gonna throw an error code then stop and goes to catch part
+        throw `Nothing found for ${searchTerm}`
+      }
+
 
       // here we grab our random result from the randomChoice function
       const randomGif = randomChoice(data);
@@ -54,11 +66,19 @@ class App extends Component {
         // we are going to get a random one each time
         gif: randomGif,
         // in our array of gifs we are going to spread our prev gifs and then add random gif to that.
-        gifs: [...prevState.gifs, randomGif]
+        gifs: [...prevState.gifs, randomGif],
+        // we turn off loading spinner when the video is displayed
+        loading: false,
+        hintText: `Press enter to see more ${searchTerm}`
       }));
     }
     catch (error) {
-
+      this.setState((prevState, props) => ({
+        ...prevState,
+        loading: false,
+        hintText: error
+      }))
+      console.log(error)
     }
   };
 
