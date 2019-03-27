@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
 import loader from './images/loader.svg';
+import Gif from './Gif';
 
+
+const randomChoice = (arr) => {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+};
 
 // going to add the Header component inside our App file since its too small
 
@@ -38,12 +44,18 @@ class App extends Component {
     );
       const {data} = await response.json();
 
+      // here we grab our random result from the randomChoice function
+      const randomGif = randomChoice(data);
+      console.log(randomGif);
+      console.log(data);
 
       this.setState((prevState, props) => ({
         ...prevState,
-
-        gif: data[2]
-      }))
+        // we are going to get a random one each time
+        gif: randomGif,
+        // in our array of gifs we are going to spread our prev gifs and then add random gif to that.
+        gifs: [...prevState.gifs, randomGif]
+      }));
     }
     catch (error) {
 
@@ -75,15 +87,15 @@ class App extends Component {
   render() {
     // const searchTerm = this.state.searchTerm
     // gif as a variable equals to this.state
-    const { searchTerm, gif } = this.state
+    const { searchTerm, gif } = this.state;
     return (
       <div className="page">
         <Header />
         <div className='search grid'>
-        {gif && (<video
-            className='grid-item' autoplay loop src = {gif.images.original.mp4}
-          />
-        )}
+          {this.state.gifs.map(gif => {
+            {/* we spread out all the gif properties into our Gif component after we run a map function on the array */}
+            return <Gif {...gif}/>
+          })}
 
           <input className='input grid-item' placeholder='Type something'
           onChange = {this.handleChange}
