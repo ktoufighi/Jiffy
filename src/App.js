@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import loader from './images/loader.svg';
 import Gif from './Gif';
+import ClearButton from './images/close-icon.svg';
 
 
 const randomChoice = (arr) => {
@@ -11,9 +12,9 @@ const randomChoice = (arr) => {
 
 // going to add the Header component inside our App file since its too small
 
-const Header = () => (
+const Header = ({clearSearch, hasResults}) => (
   <div className='header grid'>
-    <h1 className='title'>Jiffy</h1>
+  {hasResults ? <button onClick={clearSearch}><img src={ClearButton}/>  </button> : <h1 className='title'>Jiffy</h1>}
   </div>
 )
 
@@ -63,8 +64,6 @@ class App extends Component {
 
       this.setState((prevState, props) => ({
         ...prevState,
-        // we are going to get a random one each time
-        gif: randomGif,
         // in our array of gifs we are going to spread our prev gifs and then add random gif to that.
         gifs: [...prevState.gifs, randomGif],
         // we turn off loading spinner when the video is displayed
@@ -104,24 +103,43 @@ class App extends Component {
     }
   };
 
+  // inside our main component we're going to write a function that allows us to clear search
+  clearSearch = () => {
+    this.setState((prevState, props) => ({
+      ...prevState,
+      hintText: '',
+      gifs: [],
+      searchTerm: ''
+    }))
+    this.textInput.focus();
+  }
+
+
   render() {
     // const searchTerm = this.state.searchTerm
     // gif as a variable equals to this.state
-    const { searchTerm, gif } = this.state;
+    const { searchTerm, gifs } = this.state;
+    // we set a variable to see if we have any gifs
+    const hasResults = gifs.length;
     return (
       <div className="page">
-        <Header />
+        <Header clearSearch={this.clearSearch} hasResults={hasResults} />
         <div className='search grid'>
           {this.state.gifs.map(gif => {
             {/* we spread out all the gif properties into our Gif component after we run a map function on the array */}
             return <Gif {...gif}/>
           })}
 
-          <input className='input grid-item' placeholder='Type something'
+          <input
+          className='input grid-item'
+          placeholder='Type something'
           onChange = {this.handleChange}
           onKeyPress = {this.handleKeyPress}
           // this is a controlled input everytime we put a value we overwrite the old ones
           value = {searchTerm}
+          ref={input =>
+            { this.textInput = input;
+            }}
           />
         </div>
         <UserHint {...this.state}/>
